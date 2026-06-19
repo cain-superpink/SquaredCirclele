@@ -1,0 +1,80 @@
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: #252422;
+}
+
+h1 {
+  text-align: center;
+  color: white;
+}
+
+.PickerBox {
+  color: white;
+  display: flex;
+  width: clamp(10vw, 900px, 90vw);
+  height: clamp(10vh, 300px, 90vh);
+  padding: 2%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 25px;
+  margin-top: 10vh;
+  gap: 10%;
+  border: 2px solid white;
+}
+
+.choiceBox {
+  font-size: 20pt;
+  border-radius: 25px;
+  padding: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  position: relative;
+}
+
+.choiceBox:hover {
+  transform: translateY(2%);
+  cursor: pointer;
+  opacity: 80%;
+  box-shadow: 10px 10px 2px rgb(0, 0, 0);
+}
+
+#WrestlerOne {
+  background-color: #c73939;
+}
+
+#WrestlerTwo {
+  background-color: #393ec7;
+}
+
+.ratingText {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  background-color: #252422b9;
+  border-radius: 10px;
+  padding: 2%;
+  display: none;
+}
+
+.ratingText.correctText {
+  display: block;
+  color: green;
+}
+
+.ratingText.incorrectText {
+  display: block;
+  color: red;
+}
+.ratingText.tieText {
+  display: block;
+  color: rgb(162, 179, 115);
+}
+.ratingText.visible {
+  display: block;
+}
