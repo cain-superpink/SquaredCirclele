@@ -1,5 +1,13 @@
+@font-face {
+  font-family: "Inter";
+  src: url("./Resources/Inter-VariableFont_opsz\,wght.ttf");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -11,7 +19,7 @@ h1 {
   color: white;
 }
 
-.PickerBox {
+#pickerBox {
   color: white;
   display: flex;
   width: clamp(10vw, 900px, 90vw);
@@ -20,9 +28,10 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   border-radius: 25px;
-  margin-top: 10vh;
+  margin-top: 2vh;
   gap: 10%;
   border: 2px solid white;
+  position: relative;
 }
 
 .choiceBox {
@@ -62,19 +71,105 @@ h1 {
   display: none;
 }
 
-.ratingText.correctText {
+.correctText {
   display: block;
   color: green;
 }
 
-.ratingText.incorrectText {
+.incorrectText {
   display: block;
   color: red;
 }
-.ratingText.tieText {
+
+#scoreContainer .correctCircle {
+  background-color: green;
+}
+
+#scoreContainer .incorrectCircle {
+  background-color: red;
+}
+
+.tieText {
   display: block;
   color: rgb(162, 179, 115);
 }
 .ratingText.visible {
   display: block;
+}
+
+#answer {
+  font-size: 24pt;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+#nextbtn,
+#startbtn {
+  font-size: 30pt;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0;
+  color: white;
+  background: green;
+  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5%;
+  border-radius: 25px;
+  padding: 2%;
+}
+
+#nextbtn:hover,
+#startbtn:hover {
+  transform: translateY(2%);
+  cursor: pointer;
+  opacity: 80%;
+  box-shadow: 10px 10px 2px rgb(0, 0, 0);
+}
+
+#gameContainer {
+  display: none;
+}
+
+#scoreText {
+  text-align: center;
+  font-size: 20pt;
+  color: white;
+  font-weight: bold;
+}
+
+#gameContainer.visible {
+  display: block;
+}
+
+#startbtn.hidden {
+  display: none;
+}
+
+#pickerBox.hidden {
+  display: none;
+}
+
+#nextbtn.hidden {
+  display: none;
+}
+
+#scoreText.hidden {
+  display: none;
+}
+.scoreCircle {
+  background-color: white;
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  border: 2px solid white;
+}
+
+#scoreContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1%;
 }

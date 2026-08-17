@@ -6,23 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Squared Circle</title>
     <script type="module" src="app.js"></script>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
     <h1>Who has the higher Cagematch Score?</h1>
-    <div class="PickerBox">
-        <div class="choiceBox" id="WrestlerOne">
-            <p id="WrestlerOneName"></p>
-
-            <div class="ratingText" id="WrestlerOneRating"></div>
+    <div id="gameContainer">
+        <p id="answer">&nbsp;</p>
+        <p id="scoreText"></p>
+        <div id="scoreContainer">
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
+            <div class="scoreCircle"></div>
         </div>
-
-        <div class="choiceBox" id="WrestlerTwo">
-            <p id="WrestlerTwoName"> </p>
-            <div class="ratingText" id="WrestlerTwoRating"></div>
+        <div id="pickerBox">
+            <div class="choiceBox" id="WrestlerOne">
+                <p id="WrestlerOneName" class="nameText"></p>
+                <div class="ratingText" id="WrestlerOneRating"></div>
+            </div>
+            <div class="choiceBox" id="WrestlerTwo">
+                <p id="WrestlerTwoName" class="nameText"> </p>
+                <div class="ratingText" id="WrestlerTwoRating"></div>
+            </div>
         </div>
-
+        <div id="nextbtn">
+            Next
+        </div>
+    </div>
+    <div id="startbtn">
+        Start Game
+    </div>
     </div>
 </body>
 
