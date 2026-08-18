@@ -8,14 +8,15 @@ const startBtnEl = document.getElementById("startbtn");
 const gameContainerEl = document.getElementById("gameContainer");
 const pickerBoxEl = document.getElementById("pickerBox");
 const scoreCircleElArray = document.getElementsByClassName("scoreCircle");
+let rounds = [];
 
 const contestantOne = {
   button: WrestlerOneEl,
-  wrestlerData: WrestlerDataArray[0],
+  wrestlerData: {},
 };
 const contestantTwo = {
   button: WrestlerTwoEl,
-  wrestlerData: WrestlerDataArray[1],
+  wrestlerData: {},
 };
 const contestants = [contestantOne, contestantTwo];
 
@@ -25,6 +26,7 @@ let score = 0;
 
 startBtnEl.addEventListener("click", () => {
   startGame();
+  GenerateMatchupData();
 });
 
 WrestlerOneEl.addEventListener("click", () => {
@@ -36,28 +38,23 @@ WrestlerTwoEl.addEventListener("click", () => {
 
 nextBtnEl.addEventListener("click", () => {
   nextRound();
-  loadMatchup();
+  GenerateMatchupData();
 });
 
 const startGame = () => {
   roundNumber = 0;
   score = 0;
-  loadMatchup();
-  scoreTextEl.classList.add("hidden");
-  gameContainerEl.classList.add("visible");
-  pickerBoxEl.classList.remove("hidden");
-  nextBtnEl.classList.remove("hidden");
-  startBtnEl.classList.add("hidden");
+  GenerateMatchupData();
+  console.log(rounds);
+  mapMatchuptoButtons(rounds);
+  startGameShowButtons();
   document
     .querySelectorAll(".scoreCircle")
     .forEach((circle) => (circle.classList = "scoreCircle"));
 };
 
 const submitChoice = (choice) => {
-  WrestlerOneEl.style.pointerEvents = "none";
-  WrestlerTwoEl.style.pointerEvents = "none";
-
-  nextBtnEl.classList.remove("hidden");
+  disableChoiceButtons();
 
   let unchosen = choice === contestantOne ? contestantTwo : contestantOne;
 
@@ -92,36 +89,142 @@ const displayAnswer = (CorrectStatus) => {
     const ratingTextEl = btnEl.querySelector(".ratingText");
 
     if (ratingNumber === maxRating) {
-      ratingTextEl.classList.add("visible", "correctText");
+      ratingTextEl.classList.add("correctText");
     }
     if (ratingNumber < maxRating) {
-      ratingTextEl.classList.add("visible", "incorrectText");
+      ratingTextEl.classList.add("incorrectText");
     }
   });
 };
 
-const loadMatchup = () => {
-  WrestlerOneEl.style.pointerEvents = "unset";
-  WrestlerTwoEl.style.pointerEvents = "unset";
-  answerText.classList.remove("correctText", "incorrectText");
-  nextBtnEl.classList.add("hidden");
+const GenerateMatchupData = () => {
+  function dateToSeed(dateString) {
+    let hash = 0;
 
-  answerText.innerHTML = "&nbsp;";
+    for (let i = 0; i < dateString.length; i++) {
+      hash = Math.imul(31, hash) + dateString.charCodeAt(i);
+      hash |= 0;
+    }
 
-  let filteredWrestlerDataArray = [...WrestlerDataArray];
+    return hash >>> 0;
+  }
+
+  // --------------------------------------------
+  // Mulberry32 seeded random number generator
+  // --------------------------------------------
+
+  function mulberry32(seed) {
+    return function () {
+      let t = (seed += 0x6d2b79f5);
+
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // --------------------------------------------
+  // Select today's 10 rounds
+  // --------------------------------------------
+
+  function generateDailyRounds(items, rng, roundCount = 10) {
+    if (items.length < roundCount * 2) {
+      throw new Error(
+        `At least ${roundCount * 2} items are required for ${roundCount} rounds.`,
+      );
+    }
+    const rounds = [];
+
+    // Keep track of items that have already been used
+    const availableItems = [...items];
+
+    for (let round = 0; round < roundCount; round++) {
+      // ----------------------------------------
+      // Pick first item
+      // ----------------------------------------
+
+      const firstIndex = Math.floor(rng() * availableItems.length);
+
+      const firstItem = availableItems[firstIndex];
+
+      // Remove it so it cannot appear again today
+      availableItems.splice(firstIndex, 1);
+
+      // ----------------------------------------
+      // Find possible second items
+      // Must have a different score
+      // ----------------------------------------
+
+      const validSecondItems = availableItems.filter(
+        (item) => item.ratingText !== firstItem.ratingText,
+      );
+
+      if (validSecondItems.length === 0) {
+        throw new Error(
+          `Unable to create round ${round + 1}: ` +
+            `no remaining item has a different score.`,
+        );
+      }
+
+      // ----------------------------------------
+      // Pick second item
+      // ----------------------------------------
+
+      const secondIndex = Math.floor(rng() * validSecondItems.length);
+
+      const secondItem = validSecondItems[secondIndex];
+
+      // Find the actual index in availableItems
+      const actualSecondIndex = availableItems.indexOf(secondItem);
+
+      // Remove it so it cannot appear again today
+      availableItems.splice(actualSecondIndex, 1);
+
+      rounds.push({
+        round: round + 1,
+        itemA: firstItem,
+        itemB: secondItem,
+      });
+    }
+
+    return rounds;
+  }
+
+  // ============================================
+  // Generate today's game
+  // ============================================
+
+  // UTC date in YYYY-MM-DD format
+  const dateString = new Date().toISOString().slice(0, 10);
+
+  // Convert date to seed
+  const seed = dateToSeed(dateString);
+
+  // Create deterministic RNG
+  const rng = mulberry32(seed);
+
+  // Generate 10 rounds
+  rounds = generateDailyRounds(WrestlerDataArray, rng, 10);
+
+  // ============================================
+  // Use the game
+  // ============================================
+
+  // console.log("Today's date:", dateString);
+  // console.log("Seed:", seed);
+
+  // console.log(rounds);
+};
+
+const mapMatchuptoButtons = (rounds) => {
+  contestantOne.wrestlerData = rounds[roundNumber].itemA;
+  contestantTwo.wrestlerData = rounds[roundNumber].itemB;
   contestants.forEach((contestant) => {
-    const ratingTextEl = contestant.button.querySelector(".ratingText");
-    const nameTextEl = contestant.button.querySelector(".nameText");
-    ratingTextEl.classList = "ratingText";
-    contestant.wrestlerData =
-      filteredWrestlerDataArray[
-        Math.floor(Math.random() * filteredWrestlerDataArray.length)
-      ];
-    filteredWrestlerDataArray = filteredWrestlerDataArray.filter(
-      (Wrestler) => Wrestler.ratingText !== contestant.wrestlerData.ratingText,
-    );
-    nameTextEl.textContent = contestant.wrestlerData.nameText;
-    ratingTextEl.textContent = contestant.wrestlerData.ratingText;
+    const nameEl = contestant.button.querySelector(".nameText");
+    const RatingEl = contestant.button.querySelector(".ratingText");
+    nameEl.innerText = contestant.wrestlerData.nameText;
+    RatingEl.innerText = contestant.wrestlerData.ratingText;
   });
 };
 
@@ -129,7 +232,8 @@ const nextRound = () => {
   if (roundNumber > 9) {
     GameOver();
   } else {
-    loadMatchup();
+    mapMatchuptoButtons(rounds);
+    enableChoicebuttons();
   }
 };
 
@@ -137,7 +241,40 @@ const GameOver = () => {
   pickerBoxEl.classList.add("hidden");
   nextBtnEl.classList.add("hidden");
   scoreTextEl.classList.remove("hidden");
-  startBtnEl.classList.remove("hidden");
-  startBtnEl.textContent = "Play Again?";
+  answerText.classList.remove("correctText", "incorrectText");
+  answerText.innerHTML = "&nbsp;";
+
+  // startBtnEl.classList.remove("hidden");
+  // startBtnEl.textContent = "Play Again?";
   scoreTextEl.textContent = `Score: ${score} / ${roundNumber}`;
+  answerText.innerHTML = "&nbsp;";
+  const headingText = document.querySelector(".headingText");
+  headingText.innerText = "Play Again Tomorrow";
+};
+
+const enableChoicebuttons = () => {
+  WrestlerOneEl.style.pointerEvents = "unset";
+  WrestlerTwoEl.style.pointerEvents = "unset";
+  answerText.classList.remove("correctText", "incorrectText");
+  const ratingTextEls = document.querySelectorAll(".ratingText");
+  ratingTextEls.forEach((ratingTextEl) => {
+    ratingTextEl.classList.remove("correctText", "incorrectText");
+  });
+
+  nextBtnEl.classList.add("hidden");
+  answerText.innerHTML = "&nbsp;";
+};
+
+const disableChoiceButtons = () => {
+  WrestlerOneEl.style.pointerEvents = "none";
+  WrestlerTwoEl.style.pointerEvents = "none";
+  nextBtnEl.classList.remove("hidden");
+};
+
+const startGameShowButtons = () => {
+  scoreTextEl.classList.add("hidden");
+  gameContainerEl.classList.remove("hidden");
+  pickerBoxEl.classList.remove("hidden");
+  nextBtnEl.classList.remove("hidden");
+  startBtnEl.classList.add("hidden");
 };

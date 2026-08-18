@@ -500,22 +500,130 @@ const myarray = [
   { nameText: "Randy Savage", ratingText: "9.25" },
   { nameText: "Penta", ratingText: "9.10" },
 ];
+// ============================================
+// Seeded Daily Game
+// 10 rounds, 2 unique items per round
+// ============================================
 
-const now = new Date();
-let day = now.getUTCDate();
-let year = now.getUTCFullYear();
-let month = now.getUTCMonth();
+// --------------------------------------------
+// Convert YYYY-MM-DD into a stable integer seed
+// --------------------------------------------
 
-console.log(`date is ${day} ${month} ${year}`);
+function dateToSeed(dateString) {
+  let hash = 0;
 
-console.log(myarray.length);
+  for (let i = 0; i < dateString.length; i++) {
+    hash = Math.imul(31, hash) + dateString.charCodeAt(i);
+    hash |= 0;
+  }
 
-function* GenerateSequest() {
-  yield 1;
-  yield 2;
-  return 3;
+  return hash >>> 0;
 }
 
-let generator = GenerateSequest();
+// --------------------------------------------
+// Mulberry32 seeded random number generator
+// --------------------------------------------
 
-console.log(generator);
+function mulberry32(seed) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// --------------------------------------------
+// Select today's 10 rounds
+// --------------------------------------------
+
+function generateDailyRounds(items, rng, roundCount = 10) {
+  if (items.length < roundCount * 2) {
+    throw new Error(
+      `At least ${roundCount * 2} items are required for ${roundCount} rounds.`,
+    );
+  }
+
+  // Keep track of items that have already been used
+  const availableItems = [...items];
+
+  const rounds = [];
+
+  for (let round = 0; round < roundCount; round++) {
+    // ----------------------------------------
+    // Pick first item
+    // ----------------------------------------
+
+    const firstIndex = Math.floor(rng() * availableItems.length);
+
+    const firstItem = availableItems[firstIndex];
+
+    // Remove it so it cannot appear again today
+    availableItems.splice(firstIndex, 1);
+
+    // ----------------------------------------
+    // Find possible second items
+    // Must have a different score
+    // ----------------------------------------
+
+    const validSecondItems = availableItems.filter(
+      (item) => item.ratingText !== firstItem.ratingText,
+    );
+
+    if (validSecondItems.length === 0) {
+      throw new Error(
+        `Unable to create round ${round + 1}: ` +
+          `no remaining item has a different score.`,
+      );
+    }
+
+    // ----------------------------------------
+    // Pick second item
+    // ----------------------------------------
+
+    const secondIndex = Math.floor(rng() * validSecondItems.length);
+
+    const secondItem = validSecondItems[secondIndex];
+
+    // Find the actual index in availableItems
+    const actualSecondIndex = availableItems.indexOf(secondItem);
+
+    // Remove it so it cannot appear again today
+    availableItems.splice(actualSecondIndex, 1);
+
+    rounds.push({
+      round: round + 1,
+      itemA: firstItem,
+      itemB: secondItem,
+    });
+  }
+
+  return rounds;
+}
+
+// ============================================
+// Generate today's game
+// ============================================
+
+// UTC date in YYYY-MM-DD format
+const dateString = new Date().toISOString().slice(0, 10);
+
+// Convert date to seed
+const seed = dateToSeed(dateString);
+
+// Create deterministic RNG
+const rng = mulberry32(seed);
+
+// Generate 10 rounds
+const rounds = generateDailyRounds(myarray, rng, 10);
+
+// ============================================
+// Use the game
+// ============================================
+
+console.log("Today's date:", dateString);
+console.log("Seed:", seed);
+
+console.log(rounds);
