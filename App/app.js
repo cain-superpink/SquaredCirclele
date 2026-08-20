@@ -45,7 +45,6 @@ const startGame = () => {
   roundNumber = 0;
   score = 0;
   GenerateMatchupData();
-  console.log(rounds);
   mapMatchuptoButtons(rounds);
   startGameShowButtons();
   document
@@ -74,7 +73,6 @@ const displayAnswer = (CorrectStatus) => {
     score++;
   }
   scoreArray[roundNumber - 1] = CorrectStatus;
-  console.log(scoreArray);
   scoreCircleElArray[roundNumber - 1].classList.add(`${CorrectStatus}Circle`);
   const maxRating = Math.max(
     Number(contestantOne.wrestlerData.ratingText),
@@ -206,15 +204,6 @@ const GenerateMatchupData = () => {
 
   // Generate 10 rounds
   rounds = generateDailyRounds(WrestlerDataArray, rng, 10);
-
-  // ============================================
-  // Use the game
-  // ============================================
-
-  // console.log("Today's date:", dateString);
-  // console.log("Seed:", seed);
-
-  // console.log(rounds);
 };
 
 const mapMatchuptoButtons = (rounds) => {
@@ -242,14 +231,22 @@ const GameOver = () => {
   nextBtnEl.classList.add("hidden");
   scoreTextEl.classList.remove("hidden");
   answerText.classList.remove("correctText", "incorrectText");
-  answerText.innerHTML = "&nbsp;";
-
+  answerText.classList.add("hidden");
   // startBtnEl.classList.remove("hidden");
   // startBtnEl.textContent = "Play Again?";
-  scoreTextEl.textContent = `Score: ${score} / ${roundNumber}`;
+  scoreTextEl.textContent = `You Scored ${score} out of ${roundNumber}`;
   answerText.innerHTML = "&nbsp;";
   const headingText = document.querySelector(".headingText");
-  headingText.innerText = "Play Again Tomorrow";
+  if (score < 5) {
+    headingText.innerText = "Better luck next time!";
+  } else if (score == 10) {
+    headingText.innerText = "Perfect score!";
+  } else if (score >= 5) {
+    headingText.innerText = "Nice job";
+  }
+
+  const endTextEl = document.querySelector(".endText");
+  endTextEl.classList.remove("hidden");
 };
 
 const enableChoicebuttons = () => {
@@ -277,4 +274,5 @@ const startGameShowButtons = () => {
   pickerBoxEl.classList.remove("hidden");
   nextBtnEl.classList.remove("hidden");
   startBtnEl.classList.add("hidden");
+  nextBtnEl.classList.add("hidden");
 };

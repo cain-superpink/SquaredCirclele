@@ -134,6 +134,16 @@ h1 {
   display: none;
 }
 
+#answertext.hidden {
+  display: none;
+}
+
+.endText {
+  text-align: center;
+  color: white;
+  font-size: 20pt;
+}
+
 #scoreText {
   text-align: center;
   font-size: 20pt;
