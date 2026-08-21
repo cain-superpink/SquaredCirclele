@@ -49,6 +49,23 @@ h1 {
   .choiceBox {
     width: 90% !important;
   }
+  #nextbtn {
+    margin-top: 10px !important;
+    margin-bottom: 0 !important;
+    bottom: 0;
+    right: 0;
+    opacity: 1 !important;
+    padding: 2px 0px 2px 0px !important;
+    width: 150px !important;
+  }
+  #answer {
+    margin-top: 0;
+  }
+
+  .headingText {
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
 }
 
 .choiceBox {
