@@ -82,10 +82,15 @@ h1 {
 }
 
 .choiceBox:hover {
-  transform: translateY(2%);
-  cursor: pointer;
-  box-shadow: 10px 10px 2px rgb(0, 0, 0);
   filter: brightness(0.85);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .choiceBox:hover {
+    transform: translateY(2%);
+    cursor: pointer;
+    box-shadow: 10px 10px 2px rgb(0, 0, 0);
+  }
 }
 
 #WrestlerOne {
