@@ -11,7 +11,11 @@
 }
 
 body {
-  background-color: #252422;
+  background:
+    linear-gradient(to bottom, #0f5e83, #562020) left top / auto no-repeat,
+    url("./Resources/El_Santo.png") bottom center / 95vh repeat-x;
+  background-blend-mode: color;
+  height: 100vh;
 }
 
 h1 {
@@ -30,7 +34,6 @@ h1 {
   border-radius: 25px;
   margin-top: 2vh;
   gap: 3vw;
-  border: 2px solid white;
   position: relative;
   justify-content: center;
 }
@@ -55,13 +58,14 @@ h1 {
   text-align: center;
   width: 50%;
   position: relative;
+  border: 4px solid white;
 }
 
 .choiceBox:hover {
   transform: translateY(2%);
   cursor: pointer;
-  opacity: 80%;
   box-shadow: 10px 10px 2px rgb(0, 0, 0);
+  filter: brightness(0.85);
 }
 
 #WrestlerOne {
@@ -164,6 +168,7 @@ h1 {
 
 #gameContainer.visible {
   display: block;
+  max-width: 90vw;
 }
 
 #startbtn.hidden {
