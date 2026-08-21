@@ -13,9 +13,10 @@
 body {
   background:
     linear-gradient(to bottom, #0f5e83, #562020) left top / auto no-repeat,
-    url("./Resources/El_Santo.png") bottom center / 95vh repeat-x;
+    url("./Resources/El_Santo.png") bottom center / 95svh repeat-x;
   background-blend-mode: color;
-  height: 100vh;
+  height: 100svh;
+  margin: 0;
 }
 
 h1 {
@@ -32,7 +33,7 @@ h1 {
   margin-left: auto;
   margin-right: auto;
   border-radius: 25px;
-  margin-top: 2vh;
+  margin-top: 2svh;
   gap: 3vw;
   position: relative;
   justify-content: center;
@@ -41,6 +42,8 @@ h1 {
 @media screen and (max-width: 768px) {
   #pickerBox {
     flex-wrap: wrap;
+    padding: 0 !important;
+    width: 90vw !important;
   }
 
   .choiceBox {
